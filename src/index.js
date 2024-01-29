@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 
 // If you are using analytics, include the analytics module
 import { getAnalytics } from 'firebase/analytics';
-import { getAuth, signInWithEmailAndPassword ,createUserWithEmailAndPassword} from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -28,21 +28,39 @@ console.log("Firebase is initializing");
 const emailInput = document.getElementById("signup-email");
 const passwordInput = document.getElementById("signup-password");
 const errorMessage = document.getElementById("error-message");
-const signbtn=document.getElementById("signup-btn")
+const signbtn = document.getElementById("signup-btn");
+const signinbtn = document.getElementById("signin-btn");
 const auth = getAuth();
+window.addEventListener('unhandledrejection', event => {
+  console.error('Unhandled Promise Rejection:', event.reason);
+});
 
-signbtn.onclick=()=> {
+signbtn.onclick = () => {
+  console.log("button clicked");
   const email = emailInput.value;
   const password = passwordInput.value;
 
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
-      console.log(Credential.user)
-     
+      console.log(user); 
     })
     .catch((error) => {
       console.error("Firebase authentication error:", error.code, error.message);
       errorMessage.innerHTML = error.message;
     });
-}
+};
+
+signinbtn.onclick = () => {
+  console.log("button clicked");
+  var provider = new GoogleAuthProvider();
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      var token = result.user.providerData[0].uid; 
+      console.log(result.user);
+    })
+    .catch((error) => {
+      console.log("Firebase authentication error:", error.code, error.message);
+      errorMessage.innerHTML = error.message;
+    });
+};
